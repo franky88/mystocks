@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="row">
+    <div class="col-sm-3">
+        <div class="card">
+            <div class="card-body">
+                <h4>Add stock</h4>
+                <hr>
+                <form method="POST">
+                    {% csrf_token %}
+                    {{form|crispy}}
+                    <button type="submit" class="btn btn-primary">
+                        Add stock
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-9">
+        <div class="card">
+            <div class="card-body">
+                <h4>My stocks</h4>
+                <!-- <br> -->
+                <table class="table table">
+                    <tbody>
+                        {% for stock in stocks %}
+                        <tr>
+                            <td>
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h5>{{ stock.name|title }}</h5>
+                                        <p>
+                                            Ticker symbol:
+                                            <strong>
+                                                {{ stock.symbol }}
+                                            </strong>
+                                            <br>
+                                            {% if stock.total_price %}
+                                            Average price: PHP
+                                            <strong>
+                                                {{ stock.total_price|floatformat:2 }}
+                                            </strong>
+                                            <br>
+                                            {% endif %}
+                                            {% if stock.total_share %}
+                                            Total share:
+                                            <strong>
+                                                {{ stock.total_share }}
+                                            </strong>
+                                            <br>
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                    <div class="float-right">
+                                        <a href="{% url 'stocks:details' symbol=stock.symbol %}" class="btn btn-outline-primary btn-sm">Details</a>
+                                        <a href="{% url 'stocks:delete' pk=stock.pk %}" class="btn btn-outline-danger btn-sm">X</a>
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-body">
+                                        <small class="text-muted">Broker <span><a href="{{ stock.broker.website }}">{{ stock.broker.name }}</a></span></small>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

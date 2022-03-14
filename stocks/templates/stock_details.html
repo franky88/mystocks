@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="row">
+    <div class="col-sm-7">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <h4>Stock Details</h4>
+                </div>
+                <hr>
+                <table class="table table">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h5>{{ stock.name|title }}</h5>
+                                        <p>
+                                            Ticker symbol:
+                                            <strong id="stock-symbol">
+                                                {{ stock.symbol }}
+                                            </strong>
+                                            <br>
+                                            Average price: PHP
+                                            <strong id="avg-price">
+                                                {{ stock.total_price|floatformat:3 }}
+                                            </strong>
+                                            <br>
+                                            Total share:
+                                            <strong id="total-share">
+                                                {{ stock.total_share }}
+                                            </strong>
+                                            <br>
+                                            Total Investments: PHP
+                                            <strong id="total-invs">
+                                                {{ stock.total_investment|floatformat:3 }}
+                                            </strong>
+                                            <br>
+                                        </p>
+                                    </div>
+                                    <div class="float-right">
+                                        <button type="button" class="btn btn-outline-success btn-sm" data-toggle="modal" data-target="#updateStock">
+                                            Update
+                                        </button>
+                                        <button type="button" class="btn btn-outline-success btn-sm" data-toggle="modal" data-target="#buyStock">
+                                            Add
+                                        </button>
+                                        <a type="button" href="{% url 'stocks:delete' pk=stock.pk %}" class="btn btn-outline-danger btn-sm">X</a>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <div class="card mt-2 mb-2">
+                                        <div class="card-body">
+                                            <div>
+                                                <strong>Stock performance</strong>
+                                            </div>
+                                            <div>
+                                                Current price: <span id="current-price"></span> <br>
+                                                Percent change: <span id="percent-change"></span>% <br>
+                                                Market value PHP <span id="market-value"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="card-gain-loss" class="card ml-2 mt-2 mb-2">
+                                        <div class="card-header">
+                                            <small class="text-muted">Gain/Loss</small>
+                                        </div>
+                                        <div class="card-body">
+                                            <p id="gain-loss"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Buy price</th>
+                                                <th>Share</th>
+                                                <th>Total investment</th>
+                                                <th>Avg price</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for item in stock.buystock_set.all %}
+                                            <tr>
+                                                <td>PHP {{ item.price|floatformat:2 }}</td>
+                                                <td>{{ item.share }}</td>
+                                                <td>PHP {{ item.total_investment|floatformat:2 }}</td>
+                                                <td>{{ item.average_price|floatformat:2 }}</td>
+                                                <td>
+                                                    <a href="{% url 'stocks:update' ref_code=item.ref_code %}" type="button" class="btn btn-outline-success btn-sm">
+                                                        Edit
+                                                    </a>
+                                                    <a href="{% url 'stocks:delete_buy' ref_code=item.ref_code %}" class="btn btn-outline-danger btn-sm"> X </a>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-5">
+        <div class="card">
+            <div class="card-body">
+                <h4>Chart</h4>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="updateStock" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form action="" method="POST">
+            {% csrf_token %}
+            <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Update Stock</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  {{updateform|crispy}}
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="modal fade" id="buyStock" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form action="" method="POST">
+            {% csrf_token %}
+            <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Add Stock</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  {{buystockform|crispy}}
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-primary">Add stock</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
